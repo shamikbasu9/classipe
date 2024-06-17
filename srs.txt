@@ -1,0 +1,7 @@
+Interactive Video
+
+stage - 1
+aws to store a video to s3
+store s3 link to mongodb
+create a get api using feathers JS. 
+fetch video to show in frontend using vue js
