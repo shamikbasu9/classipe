@@ -4,6 +4,12 @@ import type { TransportConnection, Application } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client'
 
+import { userClient } from './services/users/users.shared'
+export type { User, UserData, UserQuery, UserPatch } from './services/users/users.shared'
+
+import { userClient } from './services/users/users.shared'
+export type { User, UserData, UserQuery, UserPatch } from './services/users/users.shared'
+
 import { usersClient } from './services/users/users.shared'
 export type { Users, UsersData, UsersQuery, UsersPatch } from './services/users/users.shared'
 
@@ -38,5 +44,7 @@ export const createClient = <Configuration = any,>(
 
   client.configure(videoClient)
   client.configure(usersClient)
+  client.configure(userClient)
+  client.configure(userClient)
   return client
 }

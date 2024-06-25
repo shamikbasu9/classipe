@@ -12,11 +12,10 @@ export const videoSchema = {
   $id: 'Video',
   type: 'object',
   additionalProperties: false,
-  required: ['_id', 'name', 'added_at', 'link'],
+  required: ['_id', 'name', 'link'],
   properties: {
     _id: ObjectIdSchema(),
     name: {type: 'string'},
-    added_at: {type: 'number'},
     link: {type: 'string'}
   }
 } as const
@@ -31,7 +30,7 @@ export const videoDataSchema = {
   $id: 'VideoData',
   type: 'object',
   additionalProperties: false,
-  required: ['name', 'added_at', 'link'],
+  required: ['name', 'link'],
   properties: {
     ...videoSchema.properties
   }

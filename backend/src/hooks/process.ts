@@ -5,6 +5,5 @@ import moment from 'moment-timezone'
 export const process = async (context: HookContext) => {
   context.data = {
     ...context.data,
-    added_at: moment().unix()
   }
 }

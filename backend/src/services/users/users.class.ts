@@ -4,18 +4,18 @@ import { MongoDBService } from '@feathersjs/mongodb'
 import type { MongoDBAdapterParams, MongoDBAdapterOptions } from '@feathersjs/mongodb'
 
 import type { Application } from '../../declarations'
-import type { Users, UsersData, UsersPatch, UsersQuery } from './users.schema'
+import type { User, UserData, UserPatch, UserQuery } from './users.schema'
 
-export type { Users, UsersData, UsersPatch, UsersQuery }
+export type { User, UserData, UserPatch, UserQuery }
 
-export interface UsersParams extends MongoDBAdapterParams<UsersQuery> {}
+export interface UserParams extends MongoDBAdapterParams<UserQuery> {}
 
 // By default calls the standard MongoDB adapter service methods but can be customized with your own functionality.
-export class UsersService<ServiceParams extends Params = UsersParams> extends MongoDBService<
-  Users,
-  UsersData,
-  UsersParams,
-  UsersPatch
+export class UserService<ServiceParams extends Params = UserParams> extends MongoDBService<
+  User,
+  UserData,
+  UserParams,
+  UserPatch
 > {}
 
 export const getOptions = (app: Application): MongoDBAdapterOptions => {

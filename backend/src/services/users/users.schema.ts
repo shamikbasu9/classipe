@@ -2,66 +2,83 @@
 import { resolve, getValidator, querySyntax } from '@feathersjs/schema'
 import { ObjectIdSchema } from '@feathersjs/schema'
 import type { FromSchema } from '@feathersjs/schema'
+import { passwordHash } from '@feathersjs/authentication-local'
 
 import type { HookContext } from '../../declarations'
 import { dataValidator, queryValidator } from '../../validators'
-import type { UsersService } from './users.class'
+import type { UserService } from './users.class'
 
 // Main data model schema
-export const usersSchema = {
-  $id: 'Users',
+export const userSchema = {
+  $id: 'User',
   type: 'object',
   additionalProperties: false,
-  required: ['_id', 'text'],
+  required: ['_id', 'email', 'password'],
   properties: {
     _id: ObjectIdSchema(),
-
-    text: { type: 'string' }
+    email: { type: 'string' },
+    password: { type: 'string' }
   }
 } as const
-export type Users = FromSchema<typeof usersSchema>
-export const usersValidator = getValidator(usersSchema, dataValidator)
-export const usersResolver = resolve<Users, HookContext<UsersService>>({})
+export type User = FromSchema<typeof userSchema>
+export const userValidator = getValidator(userSchema, dataValidator)
+export const userResolver = resolve<User, HookContext<UserService>>({})
 
-export const usersExternalResolver = resolve<Users, HookContext<UsersService>>({})
+export const userExternalResolver = resolve<User, HookContext<UserService>>({
+  // The password should never be visible externally
+  password: async () => undefined
+})
 
 // Schema for creating new data
-export const usersDataSchema = {
-  $id: 'UsersData',
+export const userDataSchema = {
+  $id: 'UserData',
   type: 'object',
   additionalProperties: false,
-  required: ['text'],
+  required: ['email', 'password'],
   properties: {
-    ...usersSchema.properties
+    ...userSchema.properties
   }
 } as const
-export type UsersData = FromSchema<typeof usersDataSchema>
-export const usersDataValidator = getValidator(usersDataSchema, dataValidator)
-export const usersDataResolver = resolve<UsersData, HookContext<UsersService>>({})
+export type UserData = FromSchema<typeof userDataSchema>
+export const userDataValidator = getValidator(userDataSchema, dataValidator)
+export const userDataResolver = resolve<UserData, HookContext<UserService>>({
+  password: passwordHash({ strategy: 'local' })
+})
 
 // Schema for updating existing data
-export const usersPatchSchema = {
-  $id: 'UsersPatch',
+export const userPatchSchema = {
+  $id: 'UserPatch',
   type: 'object',
   additionalProperties: false,
   required: [],
   properties: {
-    ...usersSchema.properties
+    ...userSchema.properties
   }
 } as const
-export type UsersPatch = FromSchema<typeof usersPatchSchema>
-export const usersPatchValidator = getValidator(usersPatchSchema, dataValidator)
-export const usersPatchResolver = resolve<UsersPatch, HookContext<UsersService>>({})
+export type UserPatch = FromSchema<typeof userPatchSchema>
+export const userPatchValidator = getValidator(userPatchSchema, dataValidator)
+export const userPatchResolver = resolve<UserPatch, HookContext<UserService>>({
+  password: passwordHash({ strategy: 'local' })
+})
 
 // Schema for allowed query properties
-export const usersQuerySchema = {
-  $id: 'UsersQuery',
+export const userQuerySchema = {
+  $id: 'UserQuery',
   type: 'object',
   additionalProperties: false,
   properties: {
-    ...querySyntax(usersSchema.properties)
+    ...querySyntax(userSchema.properties)
   }
 } as const
-export type UsersQuery = FromSchema<typeof usersQuerySchema>
-export const usersQueryValidator = getValidator(usersQuerySchema, queryValidator)
-export const usersQueryResolver = resolve<UsersQuery, HookContext<UsersService>>({})
+export type UserQuery = FromSchema<typeof userQuerySchema>
+export const userQueryValidator = getValidator(userQuerySchema, queryValidator)
+export const userQueryResolver = resolve<UserQuery, HookContext<UserService>>({
+  // If there is a user (e.g. with authentication), they are only allowed to see their own data
+  _id: async (value, user, context) => {
+    if (context.params.user) {
+      return context.params.user._id
+    }
+
+    return value
+  }
+})
